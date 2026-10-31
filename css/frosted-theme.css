@@ -1,0 +1,607 @@
+/* ==========================================================================
+   KISAN SETU (किसान सेतु) - DESIGN SYSTEM: FROSTED TERRA
+   Author: Principal UI/UX Architect (10+ Years Experience)
+   Design Philosophy: Human-Centered Outdoor Ergonomics, Glassmorphism 2.0,
+   Tactile High-Contrast Agriculture Aesthetics, Multi-Sensory Voice UI.
+   ========================================================================== */
+
+:root {
+  /* Chromatic Palette: Inspired by Earth, Flora, and Golden Harvest */
+  --color-primary: #124e2c;       /* Deep Forest / Canopy Green */
+  --color-primary-light: #227b49; /* Lush Chlorophyll */
+  --color-accent-gold: #f59e0b;   /* Ripened Wheat / Amber Gold */
+  --color-accent-amber: #d97706;  /* Harvest Ochre */
+  --color-accent-red: #dc2626;    /* Distress / Drop indicator */
+  --color-accent-blue: #0284c7;   /* Canal Irrigation / Water Blue */
+  --color-surface-bg: #f2f7f3;    /* Dewdrop Morning Mist */
+  --color-text-main: #0f2416;     /* High Contrast Rich Soil */
+  --color-text-muted: #4b6354;    /* Foliage Charcoal */
+  --color-text-light: #f8faf8;    /* Pure Cotton White */
+
+  /* Frosted Glass Specification Tokens */
+  --glass-bg-primary: rgba(255, 255, 255, 0.72);
+  --glass-bg-card: rgba(255, 255, 255, 0.65);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.45);
+  --glass-bg-dark: rgba(14, 43, 26, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-border-subtle: rgba(255, 255, 255, 0.35);
+  --glass-border-gold: rgba(245, 158, 11, 0.45);
+  --glass-blur-sm: 8px;
+  --glass-blur-md: 16px;
+  --glass-blur-lg: 24px;
+  --glass-blur-xl: 36px;
+  
+  /* Specular Highlight & Depth Shadows */
+  --glass-shadow-sm: 0 4px 16px 0 rgba(16, 56, 32, 0.05);
+  --glass-shadow-md: 0 12px 36px -4px rgba(18, 54, 32, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-shadow-float: 0 20px 48px -8px rgba(10, 40, 20, 0.22), inset 0 1px 2px 0 rgba(255, 255, 255, 0.95);
+  --glass-glow-emerald: 0 0 24px rgba(34, 197, 94, 0.35);
+  --glass-glow-gold: 0 0 24px rgba(245, 158, 11, 0.4);
+
+  /* Touch Ergonomics & Radii */
+  --radius-xs: 8px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-full: 9999px;
+  --min-touch-target: 48px;
+
+  /* Typography */
+  --font-family-base: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-family-display: 'Plus Jakarta Sans', sans-serif;
+  --transition-tactile: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Outdoor High-Sunlight Contrast Mode (Crucial for farmers standing in open fields) */
+body.sunlight-mode {
+  --glass-bg-primary: rgba(255, 255, 255, 0.95);
+  --glass-bg-card: rgba(255, 255, 255, 0.92);
+  --glass-bg-subtle: rgba(240, 248, 242, 0.95);
+  --glass-bg-dark: #0a2616;
+  --glass-border: rgba(14, 60, 32, 0.35);
+  --color-text-main: #000000;
+  --color-text-muted: #23372b;
+  --glass-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Global Reset & Ambient Mesh Canvas */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-base);
+  color: var(--color-text-main);
+  background-color: var(--color-surface-bg);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* Organic Ambient Animated Background Mesh */
+.ambient-bg-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mesh-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.65;
+  animation: floatOrb 22s ease-in-out infinite alternate;
+}
+
+.orb-emerald {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.32) 0%, rgba(18, 78, 44, 0.12) 70%, transparent 100%);
+  top: -100px;
+  left: -80px;
+}
+
+.orb-harvest {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.28) 0%, rgba(217, 119, 6, 0.08) 70%, transparent 100%);
+  bottom: 10%;
+  right: -80px;
+  animation-duration: 26s;
+  animation-delay: -5s;
+}
+
+.orb-sky {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(14, 165, 233, 0.05) 70%, transparent 100%);
+  top: 40%;
+  left: 30%;
+  animation-duration: 30s;
+  animation-delay: -10s;
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(60px, 40px) scale(1.08); }
+  100% { transform: translate(-40px, 70px) scale(0.95); }
+}
+
+/* Frosted Glass Card Primitives */
+.glass-panel {
+  background: var(--glass-bg-card);
+  backdrop-filter: blur(var(--glass-blur-md));
+  -webkit-backdrop-filter: blur(var(--glass-blur-md));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-md);
+  border-radius: var(--radius-md);
+  transition: transform 0.28s var(--transition-tactile), box-shadow 0.28s var(--transition-tactile), border-color 0.28s ease;
+}
+
+.glass-panel-subtle {
+  background: var(--glass-bg-subtle);
+  backdrop-filter: blur(var(--glass-blur-sm));
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm));
+  border: 1px solid var(--glass-border-subtle);
+  box-shadow: var(--glass-shadow-sm);
+  border-radius: var(--radius-sm);
+}
+
+.glass-panel-dark {
+  background: var(--glass-bg-dark);
+  backdrop-filter: blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: var(--glass-shadow-float);
+  color: var(--color-text-light);
+}
+
+.glass-panel-interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glass-shadow-float);
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+/* Navigation Bar */
+.frosted-nav {
+  position: sticky;
+  top: 12px;
+  z-index: 50;
+  margin: 0 16px;
+  background: var(--glass-bg-primary);
+  backdrop-filter: blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-md);
+  border-radius: var(--radius-full);
+  padding: 10px 24px;
+}
+
+/* Large Ergonomic Touch Target Buttons */
+.btn-agri {
+  min-height: var(--min-touch-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s var(--transition-tactile);
+  user-select: none;
+}
+
+.btn-agri:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px -4px rgba(22, 101, 52, 0.42), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+  box-shadow: 0 10px 24px -2px rgba(22, 101, 52, 0.5);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px -4px rgba(217, 119, 6, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text-main);
+  box-shadow: var(--glass-shadow-sm);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+/* Call to Chatbot Hero Banner & Floating Action Button */
+.call-bot-hero {
+  background: linear-gradient(135deg, rgba(18, 78, 44, 0.92) 0%, rgba(30, 110, 65, 0.88) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-lg);
+  color: #ffffff;
+  box-shadow: 0 20px 40px -10px rgba(10, 48, 26, 0.45);
+  position: relative;
+  overflow: hidden;
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.35);
+  animation: pulseRings 2.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.pulse-ring:nth-child(2) {
+  animation-delay: 0.9s;
+}
+
+.pulse-ring:nth-child(3) {
+  animation-delay: 1.8s;
+}
+
+@keyframes pulseRings {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Floating Voice Call FAB */
+.floating-call-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px 12px 14px;
+  background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+  color: white;
+  border-radius: var(--radius-full);
+  box-shadow: 0 14px 32px -4px rgba(21, 128, 61, 0.55), 0 0 0 4px rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: transform 0.3s var(--transition-tactile), box-shadow 0.3s;
+  animation: gentleBounce 4s ease-in-out infinite;
+}
+
+.floating-call-fab:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 18px 40px -4px rgba(21, 128, 61, 0.65), 0 0 0 6px rgba(255, 255, 255, 0.65);
+}
+
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Live Market Ticker */
+.ticker-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.ticker-track {
+  display: inline-flex;
+  gap: 28px;
+  animation: marquee 35s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.ticker-crop-item {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ticker-crop-item:hover {
+  transform: translateY(-2px) scale(1.04);
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 6px 20px -2px rgba(16, 185, 129, 0.3);
+}
+
+/* Crop Card Interactive Highlight when Navigated from Ticker */
+.crop-card-highlighted {
+  animation: cropHighlightPulse 2.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  z-index: 25;
+}
+
+@keyframes cropHighlightPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8), 0 20px 48px rgba(16, 185, 129, 0.5);
+    transform: scale(1.05);
+    border-color: #10b981;
+  }
+  30% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.35), 0 24px 52px rgba(16, 185, 129, 0.35);
+    transform: scale(1.03);
+    border-color: #059669;
+  }
+  60% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2), 0 16px 36px rgba(16, 185, 129, 0.2);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 4px 16px 0 rgba(16, 56, 32, 0.05);
+    transform: scale(1);
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Tabular Numbers for Accurate Price Comparisons */
+.price-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+}
+
+/* Badge System */
+.badge-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.badge-green {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.badge-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.badge-gold {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge-blue {
+  background: rgba(14, 165, 233, 0.15);
+  color: #0369a1;
+  border: 1px solid rgba(14, 165, 233, 0.35);
+}
+
+/* Modal Call Overlay (The Voice Assistant Active Call Screen) */
+.call-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 24, 15, 0.75);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  padding: 16px;
+}
+
+.call-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.call-modal-window {
+  width: 100%;
+  max-width: 540px;
+  background: linear-gradient(175deg, rgba(22, 58, 36, 0.94) 0%, rgba(10, 32, 19, 0.96) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.35s var(--transition-tactile);
+}
+
+.call-modal-overlay.active .call-modal-window {
+  transform: scale(1) translateY(0);
+}
+
+/* Sound Wave Audio Visualizer Canvas */
+#voiceWaveCanvas {
+  width: 100%;
+  height: 120px;
+  display: block;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Leaflet Map Glass Styling */
+.map-container {
+  height: 380px;
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--glass-bg-primary) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--glass-shadow-md) !important;
+  color: var(--color-text-main) !important;
+}
+
+/* Custom Scrollbar for Chat & Feeds */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(22, 101, 52, 0.25);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(22, 101, 52, 0.45);
+}
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 768px) {
+  .frosted-nav {
+    margin: 8px;
+    padding: 8px 16px;
+  }
+  .floating-call-fab span {
+    display: none;
+  }
+  .floating-call-fab {
+    padding: 14px;
+    border-radius: 50%;
+  }
+  .map-container {
+    height: 300px;
+  }
+}
+
+/* Full Responsive Container Utility */
+.frosted-nav {
+  max-width: 1380px;
+  margin: 12px auto;
+}
+
+main {
+  max-width: 1380px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   CALL HISTORY & VOICE RECORDINGS STYLES
+   ========================================================================== */
+.call-record-card {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.call-record-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -6px rgba(16, 56, 32, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.audio-wave-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+  padding: 0 8px;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.audio-wave-bar {
+  display: inline-block;
+  width: 3.5px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 3px;
+  transition: height 0.2s ease, background-color 0.2s ease;
+}
+
+.audio-wave-container.playing .audio-wave-bar {
+  animation: audioWaveBounce 0.85s ease-in-out infinite alternate;
+  background-color: #059669;
+}
+
+.audio-wave-container.playing .audio-wave-bar:nth-child(1) { animation-delay: 0.05s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(2) { animation-delay: 0.25s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(3) { animation-delay: 0.1s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(4) { animation-delay: 0.4s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(5) { animation-delay: 0.18s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(6) { animation-delay: 0.32s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(7) { animation-delay: 0.12s; }
+.audio-wave-container.playing .audio-wave-bar:nth-child(8) { animation-delay: 0.45s; }
+
+@keyframes audioWaveBounce {
+  0% { height: 4px; }
+  50% { height: 22px; }
+  100% { height: 7px; }
+}
+
+.transcript-drawer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.transcript-drawer.open {
+  max-height: 900px;
+  opacity: 1;
+  transition: max-height 0.5s ease-in, opacity 0.35s ease-in;
+}
+
+.call-filter-btn.active {
+  background-color: #047857 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+}
+
+

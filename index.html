@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Kisan Setu (किसान सेतु) — Frosted AgriTech Portal & Voice AI</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans (Humanist, high legibility for outdoor reading) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN for rapid utility classes -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            agri: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            },
+            harvest: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Custom Frosted Glass Theme CSS -->
+  <link rel="stylesheet" href="css/frosted-theme.css">
+</head>
+
+<body class="selection:bg-emerald-600 selection:text-white">
+
+  <!-- Ambient Organic Mesh Background -->
+  <div class="ambient-bg-mesh" aria-hidden="true">
+    <div class="mesh-orb orb-emerald"></div>
+    <div class="mesh-orb orb-harvest"></div>
+    <div class="mesh-orb orb-sky"></div>
+  </div>
+
+  <!-- TOP LIVE MANDI TICKER BAR -->
+  <header
+    class="w-full bg-emerald-950/95 text-white text-xs border-b border-emerald-800/40 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+      <a href="#market-prices" class="flex items-center gap-2 shrink-0 hover:opacity-90 cursor-pointer group" title="Jump to Live Market Prices">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-extrabold uppercase tracking-wider text-xs text-emerald-300 group-hover:text-emerald-200 underline-offset-2 group-hover:underline" data-i18n="statusLive">LIVE</span>
+      </a>
+
+      <!-- Marquee Ticker Track -->
+      <div class="ticker-wrap flex-1">
+        <div class="ticker-track" id="tickerTrack">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FROSTED MODERN NAVIGATION -->
+  <nav class="frosted-nav max-w-7xl mx-auto my-3 px-4 sm:px-6 py-2.5">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <!-- Logo & Branding -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-800 to-emerald-600 text-white flex items-center justify-center text-2xl shadow-sm border border-white/60">
+            🌾
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-lg sm:text-xl tracking-tight text-emerald-950">KisanSetu</span>
+              <span class="badge-glass badge-green text-[10px] uppercase font-mono px-2 py-0.5">v2.5</span>
+            </div>
+            <p class="text-xs font-semibold text-emerald-800 -mt-0.5">Smart Agriculture Gateway & Voice Advisory</p>
+          </div>
+        </div>
+
+        <!-- Mobile User Pill Button (Visible on small screens) -->
+        <button id="navAuthBtnMobile"
+          class="md:hidden px-3 py-1.5 rounded-full bg-white/80 hover:bg-emerald-100 border border-white/90 flex items-center gap-1.5 text-emerald-950 font-bold text-xs shadow-xs transition-colors shrink-0"
+          title="Farmer Account & Session">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="truncate max-w-[110px]">👨‍🌾 Ramesh</span>
+        </button>
+
+        <!-- Mobile Call History Button -->
+        <a href="#call-history-section" id="navCallHistoryBtnMobile"
+          class="md:hidden px-2.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 flex items-center gap-1 text-emerald-950 font-bold text-xs shadow-xs shrink-0"
+          title="Call History & Recordings">
+          <span>📞</span>
+          <span id="navCallHistoryBadgeMobile" class="px-1.5 py-0.2 rounded-full bg-emerald-700 text-white text-[10px] font-mono font-bold leading-none">3</span>
+        </a>
+      </div>
+
+      <!-- Controls Toolbar (Language, Sunlight, A+, Auth Pill, Call Bot) -->
+      <div class="flex items-center justify-between md:justify-end flex-wrap gap-2 sm:gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-emerald-950/10">
+        <!-- Language Selector -->
+        <select id="langSelector"
+          class="px-3 py-1.5 rounded-full text-xs font-bold bg-white/85 border border-white/90 text-emerald-950 cursor-pointer shadow-xs focus:outline-none">
+          <option value="en">English (ENG)</option>
+          <option value="hi" selected>हिन्दी (Hindi)</option>
+          <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="gu">ગુજરાતી (Gujarati)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+        </select>
+
+        <div class="flex items-center gap-1.5">
+          <!-- Outdoor Sunlight Contrast Mode Button -->
+          <button id="sunlightToggle"
+            class="w-9 h-9 rounded-full bg-white/75 hover:bg-amber-100 border border-white/80 flex items-center justify-center text-amber-700 shadow-xs transition-colors text-sm"
+            title="Toggle High-Contrast Outdoor Sunlight Mode">
+            ☀️
+          </button>
+
+          <!-- Font Size Magnifier Button -->
+          <button id="fontSizeBtn"
+            class="w-9 h-9 rounded-full bg-white/75 hover:bg-emerald-100 border border-white/80 flex items-center justify-center text-emerald-900 font-extrabold text-xs shadow-xs transition-colors"
+            title="Adjust Text Size for Readability">
+            A+
+          </button>
+        </div>
+
+        <!-- Farmer Account / Login Pill Button (Desktop) -->
+        <button id="navAuthBtn"
+          class="hidden md:flex px-3.5 py-1.5 rounded-full bg-white/85 hover:bg-emerald-100 border border-white/90 items-center gap-1.5 text-emerald-950 font-bold text-xs shadow-xs transition-colors shrink-0"
+          title="Farmer Account & Session">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="navAuthUserText" class="truncate max-w-[140px]">👨‍🌾 Ramesh Patel</span>
+        </button>
+
+        <!-- Call History Pill Button (Desktop) -->
+        <a href="#call-history-section" id="navCallHistoryBtn"
+          class="hidden sm:flex px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 items-center gap-1.5 text-emerald-950 font-bold text-xs shadow-xs transition-colors shrink-0"
+          title="Recorded Voice Calls & Transcripts">
+          <span class="text-xs">📞</span>
+          <span data-i18n="callHistoryNav">Call History</span>
+          <span id="navCallHistoryBadge" class="px-1.5 py-0.5 rounded-full bg-emerald-700 text-white text-[10px] font-mono font-extrabold leading-none">3</span>
+        </a>
+
+        <!-- Call AI Bot Trigger -->
+        <button class="btn-agri btn-primary trigger-call-bot px-4 py-2 text-xs sm:text-sm font-bold shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+          <span data-i18n="callBotBtn">Call AI Doctor</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN APPLICATION WRAPPER (Standard Full-Width Responsive Container) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+    <!-- HERO SECTION: VOICE-FIRST CALL BOT & HARVEST SUMMARY -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+
+      <!-- Prominent Voice Call Hero Card (7 Cols) -->
+      <div class="lg:col-span-7 call-bot-hero p-6 sm:p-8 flex flex-col justify-between relative">
+        <!-- Visual Concentric Pulse Rings Behind Voice Icon -->
+        <div class="pulse-ring top-6 right-6"></div>
+        <div class="pulse-ring top-6 right-6"></div>
+        <div class="pulse-ring top-6 right-6"></div>
+
+        <div class="relative z-10">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-bold border border-white/30 mb-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            24/7 Kisan Vaani Voice Assistant
+          </div>
+
+          <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight" data-i18n="heroTitle">
+            Empowering Farmers with Real-Time Markets & Voice AI
+          </h1>
+          <p class="mt-3 text-emerald-100/90 text-sm sm:text-base max-w-xl font-medium" data-i18n="heroSubtitle">
+            Don't worry about typing. Just click to call our AI crop doctor in your local voice to check live Mandi
+            rates, diagnose crop diseases, or sell directly to verified merchants.
+          </p>
+
+          <!-- Voice Trigger Main CTA -->
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <button class="btn-agri btn-gold trigger-call-bot text-base py-3.5 px-6 shadow-xl flex items-center gap-3">
+              <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <div class="text-left">
+                <div class="font-extrabold text-sm sm:text-base leading-none" data-i18n="callBotBtn">Call AI Agri-Bot
+                </div>
+                <div class="text-[11px] opacity-80 font-normal mt-0.5" data-i18n="callBotSub">Speak in Hindi, Punjabi,
+                  or English</div>
+              </div>
+            </button>
+
+            <!-- Direct Sell Action -->
+            <button
+              class="btn-agri btn-glass trigger-sell-modal text-white py-3.5 px-6 font-bold text-sm bg-white/10 hover:bg-white/25 border-white/30"
+              data-i18n="sellHarvestBtn">
+              📦 Post Harvest for Bids
+            </button>
+          </div>
+
+          <!-- Call History Quick Badge Link in Hero Card -->
+          <div class="mt-4 flex items-center gap-2">
+            <a href="#call-history-section" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold backdrop-blur-md border border-white/30 transition-all text-xs shadow-xs">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>🎙️ View Call History & Audio Recordings (<span id="heroCallCountBadge">3</span> Logged)</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Voice Question Starters -->
+        <div class="relative z-10 mt-6 pt-5 border-t border-white/20">
+          <div class="text-xs font-semibold text-emerald-200 mb-2">💡 Quick voice questions you can ask:</div>
+          <div class="flex flex-wrap gap-2">
+            <button
+              class="prompt-chip px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/30 text-xs font-semibold backdrop-blur-sm border border-white/20 transition-all"
+              data-prompt="What is today's Wheat price in Indore?">
+              "What is today's Wheat price in Indore?"
+            </button>
+            <button
+              class="prompt-chip px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/30 text-xs font-semibold backdrop-blur-sm border border-white/20 transition-all"
+              data-prompt="Find buyers offering farm pickup">
+              "Find buyers offering farm pickup"
+            </button>
+            <button
+              class="prompt-chip px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/30 text-xs font-semibold backdrop-blur-sm border border-white/20 transition-all"
+              data-prompt="Yellow spots on leaves, what to spray?">
+              "Yellow spots on leaves, what to spray?"
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side Quick-Insight Cards (5 Cols) -->
+      <div class="lg:col-span-5 flex flex-col gap-4">
+
+        <!-- Live Weather & Spray Advisory Card -->
+        <div class="glass-panel p-5 flex-1 flex flex-col justify-between" id="weather-card">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="badge-glass badge-blue text-[11px]">📍 Indore District (Malwa)</span>
+              <h3 class="text-lg font-bold text-gray-900 mt-1">Today's Spray & Field Climate</h3>
+            </div>
+            <div class="text-right">
+              <span class="text-3xl font-extrabold text-emerald-950 font-mono">27°C</span>
+              <p class="text-[11px] font-semibold text-emerald-700">Clear Skies ☀️</p>
+            </div>
+          </div>
+
+          <!-- Microclimate Parameters -->
+          <div class="grid grid-cols-3 gap-3 my-3">
+            <div class="bg-white/50 p-2.5 rounded-xl border border-white/70 text-center">
+              <span class="text-xs text-gray-500 font-medium">Humidity</span>
+              <p class="font-bold text-gray-900 text-sm mt-0.5">64%</p>
+            </div>
+            <div class="bg-white/50 p-2.5 rounded-xl border border-white/70 text-center">
+              <span class="text-xs text-gray-500 font-medium">Rain Risk</span>
+              <p class="font-bold text-emerald-700 text-sm mt-0.5">10% (Low)</p>
+            </div>
+            <div class="bg-white/50 p-2.5 rounded-xl border border-white/70 text-center">
+              <span class="text-xs text-gray-500 font-medium">Wind</span>
+              <p class="font-bold text-gray-900 text-sm mt-0.5">8 km/h NW</p>
+            </div>
+          </div>
+
+          <!-- Safe Spray Indicator -->
+          <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 shrink-0"></span>
+            <p class="text-xs font-semibold text-emerald-950">
+              <b class="text-emerald-800">Ideal Spray Window:</b> Safe for fungicide & fertilizer spraying until 05:00
+              PM today.
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Summary Metrics -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-panel p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl shrink-0">
+              🏢
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 font-semibold">Verified Buyers</div>
+              <div class="text-lg font-extrabold text-gray-900">18 Active Today</div>
+            </div>
+          </div>
+
+          <div class="glass-panel p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl shrink-0">
+              ⚡
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 font-semibold">Avg Payment</div>
+              <div class="text-lg font-extrabold text-amber-900">Instant Spot Pay</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================
+         SECTION: FARMER LOGIN, AUTHENTICATION & KISAN PASSBOOK (किसान लॉगिन)
+         ======================================================================== -->
+    <section id="farmer-auth-section" class="glass-panel p-6 sm:p-8 relative overflow-hidden border-2 border-emerald-600/30 shadow-xl space-y-6">
+      
+      <!-- ====================================================================
+           VIEW 1: LOGGED-OUT STATE (Sleek High-Conversion Farmer Login & Register)
+           ==================================================================== -->
+      <div id="farmerLoggedOutView" class="space-y-6">
+        
+        <!-- Header & Action Switcher -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-emerald-950/10">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-amber-500 text-white flex items-center justify-center text-2xl shadow-md border border-white/60 shrink-0">
+              🔐
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="badge-glass badge-green text-xs font-bold animate-pulse">🔒 SECURE KISAN AUTH GATEWAY</span>
+                <span class="text-xs text-gray-500 font-medium">Direct APMC & e-NAM Verified Access</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 mt-0.5">
+                Farmer Login & Farm Connect (किसान लॉगिन)
+              </h2>
+              <p class="text-xs sm:text-sm text-gray-600">
+                Sign in with your mobile number to unlock live surrounding Mandi prices, negotiate with verified merchants, and request farm-gate pickups.
+              </p>
+            </div>
+          </div>
+
+          <!-- Tab Switcher (OTP Login vs New Registration) -->
+          <div class="flex items-center p-1 bg-white/70 backdrop-blur-md rounded-2xl border border-white/80 shadow-2xs self-start sm:self-auto">
+            <button type="button" id="tabBtnOtp" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-emerald-800 text-white shadow-xs">
+              📲 Mobile OTP Login
+            </button>
+            <button type="button" id="tabBtnRegister" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:text-emerald-950 transition-all">
+              📝 New Farm Registration
+            </button>
+          </div>
+        </div>
+
+        <!-- PANE A: MOBILE OTP LOGIN -->
+        <div id="paneOtpLogin" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          
+          <!-- Left Benefit Card (5 Cols) -->
+          <div class="lg:col-span-5 rounded-2xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 p-6 text-white flex flex-col justify-between shadow-md relative overflow-hidden">
+            <div class="absolute -bottom-8 -right-8 w-44 h-44 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div class="relative z-10 space-y-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-emerald-200 text-xs font-bold border border-white/20">
+                🌾 Kisan Setu Verified Portal
+              </span>
+              <h3 class="text-xl sm:text-2xl font-extrabold leading-snug">
+                Instant Access to 6 Surrounding Mandis & 18 Verified Buyers
+              </h3>
+              <p class="text-emerald-100/90 text-xs sm:text-sm leading-relaxed">
+                Login with your mobile OTP to lock the highest Mandi arbitrage rates, prevent distress selling, and talk to our AI Crop Doctor 24/7.
+              </p>
+
+              <div class="space-y-2.5 pt-2">
+                <div class="flex items-center gap-2.5 text-xs font-semibold text-emerald-100">
+                  <span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-300 font-bold">✓</span>
+                  <span>Zero Commission Direct Merchant Bids</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-xs font-semibold text-emerald-100">
+                  <span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-300 font-bold">✓</span>
+                  <span>Free Buyer Truck Pickup At Your Farm Gate</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-xs font-semibold text-emerald-100">
+                  <span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-300 font-bold">✓</span>
+                  <span>Interactive 2-Way Voice Call in Local Dialects</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-6 relative z-10 border-t border-white/10 mt-6 flex items-center justify-between text-[11px] text-emerald-200/80">
+              <span>e-NAM / Agmarknet Integrated</span>
+              <span>100% Encrypted & Safe 🔒</span>
+            </div>
+          </div>
+
+          <!-- Right OTP Form Box (7 Cols) -->
+          <div class="lg:col-span-7 bg-white/65 backdrop-blur-md p-6 sm:p-7 rounded-2xl border border-white/80 shadow-xs flex flex-col justify-between space-y-5">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-gray-200/70">
+                <div>
+                  <h4 class="text-lg font-extrabold text-emerald-950">Enter Mobile Number to Sign In</h4>
+                  <p class="text-xs text-gray-500">We will send a 4-digit verification code to your phone</p>
+                </div>
+                <button type="button" id="quickDemoFillBtn" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs">
+                  <span>⚡</span> <span>1-Click Demo Fill</span>
+                </button>
+              </div>
+
+              <form id="farmerLoginForm" class="space-y-4 pt-4">
+                <!-- Mobile Number Input -->
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+                    Farmer Mobile / WhatsApp Number *
+                  </label>
+                  <div class="flex gap-2">
+                    <div class="relative flex-1">
+                      <span class="absolute left-3.5 top-3 text-xs sm:text-sm font-bold text-gray-500 flex items-center gap-1">
+                        <span>🇮🇳</span> +91
+                      </span>
+                      <input 
+                        type="tel" 
+                        id="loginMobileInput" 
+                        placeholder="98260 12345" 
+                        value="98260 12345"
+                        maxlength="10" 
+                        required 
+                        class="w-full pl-16 pr-4 py-3 rounded-xl border border-gray-300 text-sm sm:text-base font-extrabold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs font-mono"
+                      />
+                    </div>
+                    <button 
+                      type="button" 
+                      id="sendOtpBtn" 
+                      class="btn-agri btn-primary px-5 py-3 text-xs sm:text-sm font-bold shadow-xs whitespace-nowrap"
+                    >
+                      Send OTP
+                    </button>
+                  </div>
+                  <p id="otpStatusNotice" class="text-[11px] font-semibold text-emerald-800 mt-1.5 flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                    <span>✅</span> <span>Demo OTP Ready: Code is <b class="font-mono text-emerald-900 font-extrabold">1234</b></span>
+                  </p>
+                </div>
+
+                <!-- OTP Input -->
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-bold text-gray-700 uppercase tracking-wide">
+                      Enter 4-Digit Verification Code *
+                    </label>
+                    <span class="text-[11px] text-gray-500">Test OTP: <b class="font-mono text-emerald-800">1234</b></span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <input 
+                      type="text" 
+                      id="loginOtpInput" 
+                      placeholder="1234" 
+                      value="1234"
+                      maxlength="4" 
+                      required 
+                      class="w-40 px-4 py-3 rounded-xl border border-gray-300 text-center tracking-[0.5em] text-lg font-mono font-extrabold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs"
+                    />
+                    <div class="text-xs text-gray-500">
+                      <span>Didn't receive? </span>
+                      <button type="button" id="resendOtpBtn" class="text-emerald-700 font-bold hover:underline">Resend OTP</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                  type="submit" 
+                  id="loginSubmitBtn" 
+                  class="btn-agri btn-primary w-full py-3.5 text-sm sm:text-base font-extrabold shadow-lg flex items-center justify-center gap-2 mt-2"
+                >
+                  <span>🚀</span> <span>Verify OTP & Enter Mandi Portal (लॉगिन करें)</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Footer Switcher -->
+            <div class="pt-3 border-t border-gray-200/60 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2">
+              <span class="flex items-center gap-1">
+                <span>🔒</span> Kisan ID authentication powered by Govt e-NAM
+              </span>
+              <button type="button" id="switchToRegisterLink" class="text-emerald-800 font-bold hover:underline">
+                New farmer? Register your farm here →
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PANE B: NEW FARM REGISTRATION FORM -->
+        <div id="paneRegister" class="hidden bg-white/65 backdrop-blur-md p-6 sm:p-7 rounded-2xl border border-white/80 shadow-xs space-y-5">
+          <div class="flex items-center justify-between pb-3 border-b border-gray-200/70">
+            <div>
+              <h3 class="text-lg sm:text-xl font-extrabold text-emerald-950">New Farmer Registration (किसान पंजीकरण)</h3>
+              <p class="text-xs text-gray-600">Register your farm gate once to receive instant merchant bids and free truck pickup.</p>
+            </div>
+            <button type="button" id="switchToLoginLink" class="text-xs font-bold text-emerald-800 hover:underline">
+              ← Already registered? Login with Mobile OTP
+            </button>
+          </div>
+
+          <form id="farmerRegisterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Full Name -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Farmer Full Name *</label>
+              <input type="text" id="regFarmerName" placeholder="e.g. Ramesh Patel" value="Ramesh Patel" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs" />
+            </div>
+
+            <!-- Mobile -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Mobile / WhatsApp Number *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-xs font-bold text-gray-500">+91</span>
+                <input type="tel" id="regFarmerPhone" placeholder="98260 12345" value="98260 12345" maxlength="10" required class="w-full pl-11 pr-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-bold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs font-mono" />
+              </div>
+            </div>
+
+            <!-- Ready Harvest Crop (All vegetables, fruits, grains) -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Ready Harvest Crop *</label>
+              <select id="regPrimaryCrop" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs cursor-pointer">
+                <optgroup label="🥦 Vegetables (सब्जियां)">
+                  <option value="potato-jyoti">🥔 Potato (Jyoti Fresh / आलू ज्योति)</option>
+                  <option value="onion-red" selected>🧅 Red Onion (Nashik Quality / प्याज लाल)</option>
+                  <option value="tomato-hybrid">🍅 Hybrid Tomato (Firm Red / टमाटर)</option>
+                  <option value="green-chilli">🌶️ Green Chilli (Jwala / हरी मिर्च)</option>
+                  <option value="garlic-desi">🧄 Garlic (Bold Desi / लहसुन देसी)</option>
+                  <option value="ginger-fresh">🫚 Ginger (Fresh Root / ताज़ा अदरक)</option>
+                  <option value="green-peas">🟢 Green Peas (Sweet Pod / हरी मटर)</option>
+                  <option value="cauliflower">🥦 Cauliflower (Snowball / फूलगोभी)</option>
+                  <option value="cabbage-green">🥬 Cabbage (Green Ball / पत्तागोभी)</option>
+                  <option value="okra-bhindi">🌱 Okra / Ladyfinger (भिंडी)</option>
+                  <option value="brinjal-eggplant">🍆 Brinjal (Round Purple / बैंगन भरता)</option>
+                  <option value="carrot-red">🥕 Carrot (Red Desi / लाल गाजर)</option>
+                  <option value="capsicum-green">🫑 Capsicum (Green Bell / शिमला मिर्च)</option>
+                  <option value="coriander-fresh">🌿 Coriander (Fresh Cilantro / हरा धनिया)</option>
+                  <option value="bottle-gourd">🥒 Bottle Gourd (Lauki / लौकी घिया)</option>
+                </optgroup>
+                <optgroup label="🍎 Fruits & Horticulture (फल)">
+                  <option value="banana-robusta">🍌 Banana (Grand Naine / केला)</option>
+                  <option value="orange-nagpur">🍊 Orange (Nagpur Santra / संतरा)</option>
+                </optgroup>
+                <optgroup label="🌾 Cereals & Grains (अनाज)">
+                  <option value="wheat-sharbati">🌾 Wheat (Sharbati Gold / शरबती गेहूं)</option>
+                  <option value="basmati-rice">🍚 Basmati Paddy (1121 / बासमती धान)</option>
+                </optgroup>
+                <optgroup label="🌱 Oilseeds & Pulses (दलहन व तिलहन)">
+                  <option value="soybean-yellow">🌱 Soybean (Yellow Bold / पीला सोयाबीन)</option>
+                  <option value="cotton-bt">☁️ Cotton (BT Medium / कपास)</option>
+                  <option value="mustard-seed">🌼 Mustard (Black Sarson / सरसों)</option>
+                  <option value="chana-gram">🧆 Chana / Chickpea (Desi / चना देसी)</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- State -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">State *</label>
+              <select id="regState" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs cursor-pointer">
+                <option value="Madhya Pradesh" selected>Madhya Pradesh (मध्य प्रदेश)</option>
+                <option value="Maharashtra">Maharashtra (महाराष्ट्र)</option>
+                <option value="Punjab">Punjab (ਪੰਜਾਬ)</option>
+                <option value="Haryana">Haryana (हरियाणा)</option>
+                <option value="Rajasthan">Rajasthan (राजस्थान)</option>
+                <option value="Gujarat">Gujarat (ગુજરાત)</option>
+              </select>
+            </div>
+
+            <!-- District / Tehsil -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">District / Tehsil *</label>
+              <input type="text" id="regDistrict" placeholder="e.g. Indore" value="Indore" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs" />
+            </div>
+
+            <!-- Total Farm Size -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Total Farm Size</label>
+              <div class="flex gap-2">
+                <input type="number" id="regLandSize" placeholder="12" value="12" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-bold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs" />
+                <select id="regLandUnit" class="px-2.5 py-2 rounded-xl border border-gray-300 text-xs font-bold bg-gray-50 cursor-pointer">
+                  <option>Acres</option>
+                  <option>Bighas</option>
+                  <option>Hectares</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Village / Landmark -->
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Village & Farm Gate Landmark</label>
+              <input type="text" id="regVillage" placeholder="e.g. Gram Hatod, Depalpur Road" value="Gram Hatod Farm Gate" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs" />
+            </div>
+
+            <!-- Pincode -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Pincode</label>
+              <input type="text" id="regPincode" placeholder="453111" value="453111" maxlength="6" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs sm:text-sm font-bold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none shadow-2xs font-mono" />
+            </div>
+
+            <!-- Submit Register -->
+            <div class="col-span-full pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200/70">
+              <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-700">
+                <input type="checkbox" id="regWhatsappAlerts" checked class="w-4 h-4 text-emerald-600 rounded">
+                <span>Receive instant WhatsApp notifications for merchant bids & Mandi price alerts</span>
+              </label>
+
+              <button type="submit" id="registerSubmitBtn" class="btn-agri btn-primary w-full sm:w-auto px-8 py-3 text-sm font-extrabold shadow-lg flex items-center justify-center gap-2">
+                <span>🌾</span> <span>Complete Registration & Enter Portal</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- ====================================================================
+           VIEW 2: LOGGED-IN STATE (Executive Kisan Passbook & Farm Card)
+           ==================================================================== -->
+      <div id="farmerLoggedInView" class="space-y-4">
+        
+        <!-- Top Status Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-950/10">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-extrabold">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              🟢 Active Kisan Session
+            </span>
+            <span id="passbookKisanId" class="text-xs font-bold font-mono text-emerald-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              ID: KISAN-MP-8841
+            </span>
+            <span class="badge-glass badge-green text-xs font-bold">Govt e-NAM Verified</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <!-- Edit Profile Modal Trigger -->
+            <button type="button" id="openEditProfileBtn" class="px-3 py-1.5 rounded-full bg-white/80 hover:bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5">
+              <span>✏️</span> <span>Edit Farm Details</span>
+            </button>
+            <!-- Logout Button -->
+            <button type="button" id="farmerLogoutBtn" class="px-3 py-1.5 rounded-full bg-white/80 hover:bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5">
+              <span>🚪</span> <span>Logout (लॉगआउट)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Executive Passbook Card Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-white/65 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/80 shadow-xs">
+          <!-- Column 1: Farmer Identity -->
+          <div class="md:col-span-4 flex items-center gap-3.5 border-b md:border-b-0 md:border-r border-emerald-950/10 pb-3 md:pb-0 md:pr-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-amber-500 text-white flex items-center justify-center text-3xl shadow-md border-2 border-white shrink-0">
+              👨‍🌾
+            </div>
+            <div>
+              <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Verified Farmer</div>
+              <h3 id="passbookFarmerName" class="text-lg font-extrabold text-emerald-950 leading-tight">
+                Ramesh Patel
+              </h3>
+              <p id="passbookFarmerPhone" class="text-xs font-bold text-emerald-800 font-mono mt-0.5 flex items-center gap-1">
+                <span>📱 +91 98260 12345</span>
+                <span class="text-[10px] bg-emerald-100 px-1.5 rounded text-emerald-900 font-bold">WhatsApp Active</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Column 2: Farm Gate Location & Coordinates -->
+          <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-emerald-950/10 pb-3 md:pb-0 md:px-4">
+            <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Farm Gate Location</div>
+            <div id="passbookFarmerLocation" class="text-sm font-extrabold text-gray-900 mt-0.5 flex items-center gap-1.5">
+              <span>📍</span> <span>Indore Rural (Gram Hatod), MP</span>
+            </div>
+            <div id="passbookFarmerCoords" class="text-[11px] font-mono text-gray-500 font-bold mt-0.5">
+              Coordinates: 22.7312° N, 75.8648° E
+            </div>
+          </div>
+
+          <!-- Column 3: Ready Harvest Crop & Truck Status -->
+          <div class="md:col-span-4 md:pl-4 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ready Harvest Produce</div>
+              <div id="passbookFarmerCrop" class="text-sm font-extrabold text-emerald-950 mt-0.5 flex items-center gap-1.5">
+                <span>🧅</span> <span>Red Onion (Nashik) • 12 Acres</span>
+              </div>
+              <div class="text-[11px] font-semibold text-emerald-700 mt-0.5 flex items-center gap-1">
+                <span>🚜</span> <span>Free Farm Gate Pickup Eligible</span>
+              </div>
+            </div>
+
+            <a href="#location-analysis-section" class="btn-agri btn-gold py-2 px-3 text-xs font-bold shadow-xs whitespace-nowrap">
+              View Rates ↓
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================
+         SECTION: LOCATION INTELLIGENCE & SURROUNDING MANDI PRICE MATRIX
+         ======================================================================== -->
+    <section id="location-analysis-section" class="glass-panel p-5 sm:p-7 relative overflow-hidden border-2 border-emerald-600/30 shadow-xl">
+      <!-- Ambient Glow Behind Location Hub -->
+      <div class="absolute -top-12 -right-12 w-64 h-64 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-emerald-950/10">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="badge-glass badge-green text-xs font-bold animate-pulse">📍 REAL-TIME GPS ENGINE</span>
+            <span class="text-xs text-gray-500 font-medium">Automatic Proximity & Rate Arbitrage</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 mt-1">
+            Analyze Your Location & Surrounding Mandi Rates
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-600 max-w-2xl mt-0.5">
+            Share your farm location to automatically calculate distances, identify all surrounding Mandi yards within transport reach, and find the highest net profit for your harvest.
+          </p>
+        </div>
+
+        <!-- Location Controls (GPS Button + District Input + Presets) -->
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+          <!-- District Name Input (Sends location: Lat/Lng or District name) -->
+          <div class="relative flex items-center">
+            <input 
+              type="text" 
+              id="districtSearchInput" 
+              placeholder="Type District (e.g. Indore, Nashik, Karnal)..." 
+              class="pl-8 pr-20 py-2.5 rounded-full text-xs font-semibold bg-white/80 border border-emerald-600/40 text-emerald-950 shadow-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none w-60 sm:w-68"
+            />
+            <span class="absolute left-2.5 text-gray-400 text-xs">🔍</span>
+            <button 
+              id="districtSearchBtn" 
+              class="absolute right-1.5 py-1 px-3 rounded-full bg-emerald-800 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-xs transition-all"
+            >
+              Analyze
+            </button>
+          </div>
+
+          <!-- 1-Click Detect GPS Button -->
+          <button 
+            id="detectLocationBtn" 
+            class="btn-agri btn-primary py-2.5 px-4 text-xs font-bold shadow-md flex items-center gap-1.5"
+            title="Use Device GPS Location"
+          >
+            <span id="gpsBtnIcon">📍</span>
+            <span id="gpsBtnText">GPS Location</span>
+          </button>
+
+          <!-- Quick Region Switcher -->
+          <select 
+            id="locationPresetSelect" 
+            class="px-3 py-2.5 rounded-full text-xs font-bold bg-white/80 border border-emerald-600/40 text-emerald-950 shadow-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer"
+          >
+            <option value="loc-indore">🏡 Indore Rural / Depalpur</option>
+            <option value="loc-sanwer">🚜 Sanwer Tehsil Cluster</option>
+            <option value="loc-rau">🧅 Rau / Mhow Corridor</option>
+            <option value="loc-dewas">🌱 Dewas Industrial Hub</option>
+            <option value="loc-ujjain">🌾 Ujjain Chimanganj Belt</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Location Analysis Telemetry Banner -->
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-3 bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white/80">
+        <div>
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Your Farm Location</span>
+          <div class="font-extrabold text-sm text-emerald-950 mt-0.5 flex items-center gap-1.5" id="userLocationName">
+            <span>🏡</span> <span class="truncate">Indore Rural (Central Malwa)</span>
+          </div>
+          <p class="text-[11px] text-gray-500 font-mono" id="userCoordinatesText">22.7312° N, 75.8648° E</p>
+        </div>
+
+        <div>
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Agro-Climatic Zone</span>
+          <div class="font-bold text-xs text-gray-800 mt-0.5 truncate" id="userAgroZoneText">
+            Malwa Plateau (Deep Black Soil)
+          </div>
+          <span class="badge-glass badge-green text-[10px] mt-1">High Soybean & Wheat Yield</span>
+        </div>
+
+        <div>
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Surrounding Mandis</span>
+          <div class="font-extrabold text-base text-gray-900 mt-0.5" id="surroundingMandisCount">
+            6 Mandis Found
+          </div>
+          <p class="text-[11px] text-emerald-700 font-semibold">Within 50 km transport radius</p>
+        </div>
+
+        <div class="border-l-0 md:border-l border-emerald-900/10 md:pl-3">
+          <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Proximity Arbitrage</span>
+          <div class="font-extrabold text-sm text-amber-950 mt-0.5" id="arbitrageSummaryBadge">
+            Dewas pays +₹70/Qtl more!
+          </div>
+          <p class="text-[11px] text-gray-600">Net profit after diesel: <b>+₹2,250</b></p>
+        </div>
+      </div>
+
+      <!-- SURROUNDING MANDI PRICE MATRIX -->
+      <div class="mt-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📊</span>
+            <div>
+              <h3 class="font-bold text-base text-gray-900">Surrounding Mandis Live Price Comparison</h3>
+              <p class="text-xs text-gray-500">Live auction prices calculated from your current location</p>
+            </div>
+          </div>
+
+          <!-- Commodity Filter Dropdown for Matrix -->
+          <div class="flex items-center gap-2">
+            <label for="matrixCropSelect" class="text-xs font-bold text-gray-700">Select Crop:</label>
+            <select 
+              id="matrixCropSelect" 
+              class="px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-emerald-900 text-white shadow-xs focus:outline-none cursor-pointer"
+            >
+              <optgroup label="🥦 All Vegetables (सब्जियां)">
+                <option value="potato-jyoti">🥔 Potato / आलू (Jyoti Fresh) - ₹1,540/Qtl</option>
+                <option value="onion-red">🧅 Red Onion / प्याज (Nashik Red) - ₹2,350/Qtl</option>
+                <option value="tomato-hybrid">🍅 Hybrid Tomato / टमाटर (Firm Red) - ₹1,680/Qtl</option>
+                <option value="green-chilli">🌶️ Green Chilli / हरी मिर्च (Jwala) - ₹4,250/Qtl</option>
+                <option value="garlic-desi">🧄 Garlic / लहसुन (Bold Desi) - ₹14,200/Qtl</option>
+                <option value="ginger-fresh">🫚 Ginger / अदरक (Fresh Root) - ₹6,850/Qtl</option>
+                <option value="green-peas">🟢 Green Peas / हरी मटर (Sweet Pod) - ₹3,800/Qtl</option>
+                <option value="cauliflower">🥦 Cauliflower / फूलगोभी (Snowball) - ₹1,850/Qtl</option>
+                <option value="cabbage-green">🥬 Cabbage / पत्तागोभी (Green Ball) - ₹1,220/Qtl</option>
+                <option value="okra-bhindi">🌱 Okra / भिंडी (Green Kranti) - ₹3,450/Qtl</option>
+                <option value="brinjal-eggplant">🍆 Brinjal / बैंगन (Round Purple) - ₹1,420/Qtl</option>
+                <option value="carrot-red">🥕 Carrot / गाजर (Red Desi) - ₹2,150/Qtl</option>
+                <option value="capsicum-green">🫑 Capsicum / शिमला मिर्च - ₹3,650/Qtl</option>
+                <option value="coriander-fresh">🌿 Coriander / हरा धनिया - ₹2,850/Qtl</option>
+                <option value="bottle-gourd">🥒 Bottle Gourd / लौकी (दूधी) - ₹1,350/Qtl</option>
+              </optgroup>
+              <optgroup label="🍌 Fruits & Horticulture (फल)">
+                <option value="banana-robusta">🍌 Banana / केला (Grand Naine G9) - ₹1,950/Qtl</option>
+                <option value="orange-nagpur">🍊 Orange / संतरा (Nagpur Mandarin) - ₹4,850/Qtl</option>
+                <option value="pomegranate-bhagwa">🍎 Pomegranate / अनार (Bhagwa Super) - ₹8,900/Qtl</option>
+              </optgroup>
+              <optgroup label="🌶️ Spices & Cash Crops (मसाले)">
+                <option value="cumin-jeera">🌾 Cumin / जीरा (Gujarat Bold) - ₹26,800/Qtl</option>
+                <option value="turmeric-salem">🟡 Turmeric / हल्दी (Salem Golden) - ₹13,400/Qtl</option>
+              </optgroup>
+              <optgroup label="🌾 Cereals & Grains (अनाज)">
+                <option value="wheat-sharbati">🌾 Wheat / गेहूं (Sharbati Gold) - ₹2,840/Qtl</option>
+                <option value="basmati-rice">🍚 Basmati Paddy / धान (1121) - ₹4,320/Qtl</option>
+              </optgroup>
+              <optgroup label="🌱 Oilseeds & Pulses (तिलहन व दलहन)">
+                <option value="soybean-yellow">🌱 Soybean / सोयाबीन (Yellow Bold) - ₹4,890/Qtl</option>
+                <option value="mustard-seed">🌼 Mustard / सरसों (Black Sarson) - ₹5,650/Qtl</option>
+                <option value="chana-gram">🧆 Chana / चना (Desi Chickpea) - ₹6,150/Qtl</option>
+                <option value="cotton-bt">☁️ Cotton / कपास (BT Medium) - ₹7,240/Qtl</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <!-- Profit Arbitrage Highlight Callout -->
+        <div id="arbitrageCalloutBox" class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-emerald-500/15 to-transparent border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <!-- Dynamic Arbitrage Injected via JS -->
+        </div>
+
+        <!-- AI Engine Contextual Advisory & Voice Summary Banner -->
+        <div id="aiVoiceAdvisoryCard" class="glass-panel p-5 rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-900/90 to-emerald-950/95 text-white shadow-xl relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/20">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-emerald-400 text-emerald-950 flex items-center justify-center text-2xl font-bold shadow-md shrink-0">
+                🤖
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-amber-300">AI Engine Advisory & Voice Summary</span>
+                  <span class="badge-glass badge-green text-[10px] text-white">e-NAM Verified</span>
+                </div>
+                <h4 id="aiAdvisoryVerdictBadge" class="font-extrabold text-sm sm:text-base text-white mt-0.5">
+                  Analyzing optimal Mandi route...
+                </h4>
+              </div>
+            </div>
+
+            <!-- Audio Playback Button -->
+            <button id="playAiVoiceSummaryBtn" class="btn-agri btn-gold py-2 px-4 text-xs font-bold shadow-lg flex items-center gap-2 self-start sm:self-auto shrink-0">
+              <span id="playVoiceIcon">🔊</span>
+              <span id="playVoiceText">Play AI Voice Advice</span>
+            </button>
+          </div>
+
+          <!-- AI Explanation Body -->
+          <div class="mt-3.5 flex flex-col md:flex-row gap-4 items-start justify-between">
+            <p id="aiAdvisoryExplanationText" class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-3xl">
+              Querying Agmarknet/e-NAM database for live auction prices and spatial transport deduction...
+            </p>
+            
+            <div class="shrink-0 flex items-center gap-2">
+              <button class="trigger-call-bot px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-bold backdrop-blur-md border border-white/30 transition-all">
+                Ask AI a Question 📞
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Surrounding Mandis Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="surroundingMandisGrid">
+          <!-- Dynamic Surrounding Mandis Cards Injected via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTION: CALL HISTORY & VOICE RECORDINGS (कॉल इतिहास एवं ऑडियो रिकॉर्डिंग)
+         ======================================================================== -->
+    <section id="call-history-section" class="glass-panel p-6 sm:p-8 relative overflow-hidden border-2 border-emerald-600/30 shadow-xl space-y-6">
+      
+      <!-- Top Decorative Ambient Glow -->
+      <div class="absolute -top-12 -right-12 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Section Header -->
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-emerald-950/10">
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="badge-glass badge-green text-xs font-bold animate-pulse">🎙️ 2-WAY AUDIO ARCHIVE & TRANSCRIPTS</span>
+            <span class="text-xs text-gray-500 font-medium">Automatic Call Recording & Multi-Dialect Transcripts</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 mt-1" data-i18n="callHistoryTitle">
+            Kisan Call History & Voice Recordings
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-600 max-w-2xl mt-0.5" data-i18n="callHistorySubtitle">
+            Every voice consultation with Kisan AI Doctor, live Mandi rate inquiry, and merchant phone call is automatically recorded, transcribed, and indexed for instant playback and price auditing.
+          </p>
+        </div>
+
+        <!-- Quick Summary Stats -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div class="bg-white/75 px-4 py-2.5 rounded-2xl border border-white/80 shadow-xs text-center min-w-[95px]">
+            <span class="text-[10px] uppercase font-bold text-gray-500 block">Total Calls</span>
+            <span class="text-lg font-extrabold text-emerald-900 font-mono" id="historyTotalCalls">3</span>
+          </div>
+          <div class="bg-white/75 px-4 py-2.5 rounded-2xl border border-white/80 shadow-xs text-center min-w-[95px]">
+            <span class="text-[10px] uppercase font-bold text-gray-500 block">Talk Time</span>
+            <span class="text-lg font-extrabold text-emerald-900 font-mono" id="historyTotalDuration">04:24</span>
+          </div>
+          <div class="bg-white/75 px-4 py-2.5 rounded-2xl border border-white/80 shadow-xs text-center min-w-[95px]">
+            <span class="text-[10px] uppercase font-bold text-gray-500 block">Supported</span>
+            <span class="text-lg font-extrabold text-emerald-900 font-mono">6 Dialects</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Toolbar -->
+      <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-1.5 p-1 bg-white/70 rounded-2xl border border-white/80 shadow-xs text-xs font-semibold overflow-x-auto scrollbar-none">
+          <button class="call-filter-btn active px-3.5 py-1.5 rounded-xl font-bold transition-all" data-filter="all">
+            All Calls (<span id="filterCountAll">3</span>)
+          </button>
+          <button class="call-filter-btn px-3.5 py-1.5 rounded-xl font-bold text-emerald-950 hover:bg-white/80 transition-all" data-filter="ai">
+            🌾 AI Crop Doctor (<span id="filterCountAi">2</span>)
+          </button>
+          <button class="call-filter-btn px-3.5 py-1.5 rounded-xl font-bold text-emerald-950 hover:bg-white/80 transition-all" data-filter="merchant">
+            🚜 Verified Merchants (<span id="filterCountMerchant">1</span>)
+          </button>
+        </div>
+
+        <!-- Search & Action Buttons -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Realtime Search -->
+          <div class="relative">
+            <input type="text" id="callHistorySearchInput" placeholder="Search calls by crop or topic..."
+              class="pl-8 pr-3 py-1.5 rounded-xl bg-white/85 border border-white/90 text-xs text-emerald-950 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-44 sm:w-60 shadow-xs" />
+            <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <!-- New Call Action Button -->
+          <button class="trigger-call-bot btn-agri btn-primary py-1.5 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+            <span>📞</span> <span>New Call</span>
+          </button>
+
+          <!-- Export Call Log -->
+          <button id="exportCallsBtn" class="btn-agri btn-glass py-1.5 px-3 text-xs font-bold text-emerald-950 bg-white/70 hover:bg-white border-white/80" title="Export Call Notes">
+            📥 Export Notes
+          </button>
+
+          <!-- Clear History -->
+          <button id="clearCallHistoryBtn" class="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors" title="Clear Call History">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Call History Cards Stream Container -->
+      <div id="callHistoryContainer" class="space-y-4">
+        <!-- Injected via JavaScript -->
+      </div>
+
+    </section>
+
+    <!-- SECTION 1: REAL-TIME COMMODITY PRICES -->
+    <section id="market-prices" class="space-y-4">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="badge-glass badge-green text-xs font-bold">● UPDATED 2 MINS AGO</span>
+            <span class="text-xs text-gray-500 font-medium">Over 24 Mandi Yards reporting</span>
+          </div>
+          <h2 class="text-2xl font-extrabold text-emerald-950 mt-1" data-i18n="livePrices">
+            Live Mandi Commodity Prices
+          </h2>
+          <p class="text-xs md:text-sm text-gray-600">
+            Real-time auction rates, price movement charts, and official government MSP benchmarks.
+          </p>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Search Crop Input -->
+          <div class="relative">
+            <input type="text" id="cropSearchInput" placeholder="Search crop, e.g. Wheat..."
+              class="pl-9 pr-4 py-2 rounded-full text-xs font-semibold bg-white/70 border border-white/80 focus:outline-none focus:ring-2 focus:ring-emerald-600 shadow-xs w-48 sm:w-60" />
+            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <button
+          class="category-pill active px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-800 text-white shadow-xs transition-all whitespace-nowrap"
+          data-category="All">All Produce</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Vegetables">Vegetables 🥔🧅🍅</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Fruits">Fruits 🍌🍊🍎</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Spices">Spices 🌶️🧄</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Cereals">Cereals 🌾</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Oilseeds">Oilseeds 🌱</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Pulses">Pulses 🧆</button>
+        <button
+          class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white/60 text-gray-800 hover:bg-white/90 border border-white/70 shadow-xs transition-all whitespace-nowrap"
+          data-category="Fibre">Cotton ☁️</button>
+      </div>
+
+      <!-- Commodities Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="commoditiesGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- SECTION 2: VERIFIED MERCHANTS & DIRECT HARVEST SELLING -->
+    <section id="merchants-section" class="space-y-4 pt-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="badge-glass badge-gold text-xs font-bold">🤝 ZERO MIDDLEMAN COMMISSION</span>
+          <h2 class="text-2xl font-extrabold text-emerald-950 mt-1" data-i18n="merchantsTitle">
+            Verified Local Buyers & Instant Offers
+          </h2>
+          <p class="text-xs md:text-sm text-gray-600">
+            Sell directly to licensed corporate buyers, grain exporters, and oil mills offering on-farm pickup.
+          </p>
+        </div>
+
+        <button class="btn-agri btn-primary trigger-sell-modal py-2.5 px-5 text-xs font-bold shadow-md shrink-0">
+          + Post New Harvest Lot
+        </button>
+      </div>
+
+      <!-- Merchants List -->
+      <div class="space-y-3" id="merchantsList">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- SECTION 3: GEOSPATIAL MANDIS & RADIUS TRACKER -->
+    <section id="mandi-map" class="space-y-4 pt-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="badge-glass badge-blue text-xs font-bold">📍 GPS GEOLOCATION ENGINE</span>
+          <h2 class="text-2xl font-extrabold text-emerald-950 mt-1" data-i18n="geoTitle">
+            Nearby Mandis & Merchant Hubs
+          </h2>
+          <p class="text-xs md:text-sm text-gray-600">
+            Locate electronic weighbridges, cold storage facilities, and arrival timings around your farm.
+          </p>
+        </div>
+
+        <!-- Radius Selector -->
+        <div
+          class="flex items-center gap-2 bg-white/60 p-1.5 rounded-full border border-white/80 shadow-xs text-xs font-semibold">
+          <span class="text-gray-500 pl-2">Search Radius:</span>
+          <select id="radiusSelect"
+            class="bg-transparent font-bold text-emerald-900 focus:outline-none cursor-pointer pr-2">
+            <option value="15">Within 15 KM</option>
+            <option value="25" selected>Within 25 KM</option>
+            <option value="50">Within 50 KM</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Map & Mandi Info Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Interactive Leaflet Map (7 Cols) -->
+        <div class="lg:col-span-7 glass-panel p-2 shadow-lg">
+          <div id="mapElement" class="map-container"></div>
+          <div class="p-3 flex items-center justify-between text-xs text-gray-600 bg-white/40 border-t border-white/60">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1 font-semibold"><span
+                  class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span> 🏛️ Mandis</span>
+              <span class="flex items-center gap-1 font-semibold"><span
+                  class="w-3 h-3 rounded-full bg-amber-600 inline-block"></span> 🚜 Merchant Trucks</span>
+            </div>
+            <span class="text-[11px] font-bold text-emerald-800">Click any pin for navigation</span>
+          </div>
+        </div>
+
+        <!-- Mandis Detailed List (5 Cols) -->
+        <div class="lg:col-span-5 space-y-3 max-h-[460px] overflow-y-auto pr-1" id="mandisList">
+          <!-- Injected via JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-16 border-t border-emerald-900/10 bg-white/40 backdrop-blur-md py-8">
+    <div
+      class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🌾</span>
+        <span class="font-bold text-emerald-950">KisanSetu Agricultural Network</span>
+        <span>• Dedicated to 140M Indian Farmers</span>
+      </div>
+      <div class="flex items-center gap-4 font-semibold">
+        <a href="#market-prices" class="hover:underline">Commodity Bhav</a>
+        <a href="#call-history-section" class="hover:underline text-emerald-800 font-bold">📞 Call History</a>
+        <a href="#merchants-section" class="hover:underline">Sell Direct</a>
+        <a href="#mandi-map" class="hover:underline">Find Mandis</a>
+        <button class="trigger-call-bot hover:underline text-emerald-800 font-bold">Voice Helpline</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       MODAL 1: VOICE AI ACTIVE CALL SCREEN (The Voice-to-Chatbot experience)
+       ======================================================================== -->
+  <div id="callModalOverlay" class="call-modal-overlay">
+    <div class="call-modal-window p-6 text-white flex flex-col justify-between min-h-[540px]">
+
+      <!-- Top Call Status Header -->
+      <div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="font-mono text-xs uppercase tracking-wider text-emerald-300 font-bold" id="callStatusSub">
+              Connecting to Kisan Sahayak AI...
+            </span>
+          </div>
+          <div class="font-mono text-sm font-bold text-emerald-200" id="callTimerDisplay">
+            00:00
+          </div>
+        </div>
+
+        <!-- Assistant Profile -->
+        <div class="text-center my-3">
+          <div
+            class="w-14 h-14 rounded-3xl bg-gradient-to-tr from-emerald-500 to-amber-400 mx-auto flex items-center justify-center text-3xl shadow-lg border border-white/30">
+            🌾
+          </div>
+          <h3 class="text-lg font-extrabold mt-1.5 tracking-tight">Kisan Sahayak (AI Crop Doctor & Broker)</h3>
+          
+          <!-- DeepSeek LLM Connection Pill -->
+          <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-[10px] text-blue-200 font-bold mt-1 shadow-xs">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+            <span>⚡ DeepSeek AI Connected</span>
+          </div>
+          
+          <!-- In-Call Language Selector & Live Mic Indicator -->
+          <div class="flex items-center justify-center gap-2 mt-2 flex-wrap">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 border border-white/25 text-xs">
+              <span class="text-emerald-200 text-[11px] font-bold">🗣️ Dialect:</span>
+              <select id="callLangSelector" class="bg-emerald-950/90 text-white font-extrabold text-xs rounded-lg px-2 py-0.5 border border-white/30 focus:outline-none cursor-pointer">
+                <option value="en">English (ENG)</option>
+                <option value="hi" selected>हिन्दी (Hindi)</option>
+                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                <option value="mr">मराठी (Marathi)</option>
+                <option value="gu">ગુજરાતી (Gujarati)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+              </select>
+            </div>
+
+            <!-- Live Mic Indicator Badge -->
+            <div id="micPulseStatus" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400 text-emerald-200 text-[11px] font-extrabold animate-pulse">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>🎙️ Mic Listening</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas Real-Time Voice Waveform -->
+        <canvas id="voiceWaveCanvas" height="85"></canvas>
+      </div>
+
+      <!-- Middle: Dynamic Live Transcript Feed -->
+      <div class="my-2 flex-1 max-h-[160px] overflow-y-auto space-y-2 pr-1" id="transcriptContainer">
+        <!-- Live transcription chips injected via JS -->
+      </div>
+
+      <!-- Quick Suggested Voice Chips -->
+      <div id="callPromptChipsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none text-[11px]">
+        <button
+          class="prompt-chip px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 whitespace-nowrap">
+          🌾 आज गेहूं और प्याज के भाव
+        </button>
+        <button
+          class="prompt-chip px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 whitespace-nowrap">
+          🚜 फार्म पिकअप व्यापारी
+        </button>
+        <button
+          class="prompt-chip px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 whitespace-nowrap">
+          🐛 पीली पत्तियों का इलाज
+        </button>
+      </div>
+
+      <!-- Text Backup Input -->
+      <div class="relative mt-1 mb-4">
+        <input type="text" id="callInputText" placeholder="Or type your question here..."
+          class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-black/30 border border-white/20 text-xs text-white placeholder-white/50 focus:outline-none focus:border-emerald-400" />
+        <button id="callSendBtn" class="absolute right-2 top-2 p-1 text-emerald-300 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Bottom Audio Call Controls (Mute, Speaker, Red End Call Button) -->
+      <div class="pt-3 border-t border-white/15 flex items-center justify-around">
+        <!-- Mute Button -->
+        <button id="muteCallBtn"
+          class="w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 flex items-center justify-center text-white transition-all shadow-md"
+          title="Mute Microphone">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+        </button>
+
+        <!-- Red End Call Button -->
+        <button id="endCallBtn"
+          class="w-16 h-16 rounded-full bg-rose-600 hover:bg-rose-700 flex items-center justify-center text-white shadow-xl transform active:scale-95 transition-all"
+          title="End Call">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+              d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z" />
+          </svg>
+        </button>
+
+        <!-- Speakerphone Toggle -->
+        <button id="speakerToggleBtn"
+          class="w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 flex items-center justify-center text-white transition-all shadow-md"
+          title="Speaker Audio On/Off">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: POST HARVEST TO MERCHANTS (Sell Portal Drawer)
+       ======================================================================== -->
+  <div id="sellModalOverlay" class="call-modal-overlay">
+    <div class="call-modal-window p-6 text-gray-900 bg-white/95 max-w-lg">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-200">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📦</span>
+          <div>
+            <h3 class="font-bold text-base text-gray-900">Broadcast Harvest to Verified Buyers</h3>
+            <p class="text-xs text-gray-500">Get bids from 4 nearby merchants within 5 minutes</p>
+          </div>
+        </div>
+        <button id="closeSellModalBtn"
+          class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+          ✕
+        </button>
+      </div>
+
+      <form id="sellHarvestForm" class="mt-4 space-y-4">
+        <!-- Visual Selected Crop Photo Preview -->
+        <div class="relative w-full h-28 rounded-2xl overflow-hidden border border-emerald-300 shadow-xs">
+          <img id="sellCropPhotoPreview" src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&auto=format&fit=crop&q=80" alt="Selected Crop" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-2 left-3 right-3 flex items-end justify-between text-white">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300">Selected Crop Photo</span>
+              <h4 id="sellCropPhotoName" class="font-extrabold text-sm leading-tight text-white drop-shadow">Wheat (Sharbati Gold)</h4>
+            </div>
+            <span class="badge-glass badge-green text-[10px] font-bold">Grade Verified</span>
+          </div>
+        </div>
+
+        <!-- Crop Select -->
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Select Crop to Sell</label>
+          <select id="sellCropSelect"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold bg-gray-50 focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer">
+            <optgroup label="🥦 Vegetables (सब्जियां)">
+              <option value="potato-jyoti">🥔 Potato (Jyoti Fresh) - ₹1,540/Qtl</option>
+              <option value="onion-red" selected>🧅 Red Onion (Nashik Quality) - ₹2,350/Qtl</option>
+              <option value="tomato-hybrid">🍅 Hybrid Tomato (Firm Red) - ₹1,680/Qtl</option>
+              <option value="green-chilli">🌶️ Green Chilli (Jwala Spicy) - ₹4,250/Qtl</option>
+              <option value="garlic-desi">🧄 Garlic (Bold Desi White) - ₹14,200/Qtl</option>
+              <option value="ginger-fresh">🫚 Ginger (Fresh Wet Root) - ₹6,850/Qtl</option>
+              <option value="green-peas">🟢 Green Peas (Sweet Pod) - ₹3,800/Qtl</option>
+              <option value="cauliflower">🥦 Cauliflower (Snowball) - ₹1,850/Qtl</option>
+              <option value="cabbage-green">🥬 Cabbage (Green Solid Ball) - ₹1,220/Qtl</option>
+              <option value="okra-bhindi">🌱 Okra / Ladyfinger (Green Kranti) - ₹3,450/Qtl</option>
+              <option value="brinjal-eggplant">🍆 Brinjal (Round Purple) - ₹1,420/Qtl</option>
+              <option value="carrot-red">🥕 Carrot (Red Desi Winter) - ₹2,150/Qtl</option>
+              <option value="capsicum-green">🫑 Capsicum (Green Bell) - ₹3,650/Qtl</option>
+              <option value="coriander-fresh">🌿 Coriander (Fresh Cilantro) - ₹2,850/Qtl</option>
+              <option value="bottle-gourd">🥒 Bottle Gourd (Lauki / Doodhi) - ₹1,350/Qtl</option>
+            </optgroup>
+            <optgroup label="🍎 Fruits & Horticulture (फल)">
+              <option value="banana-robusta">🍌 Banana (Grand Naine G-9) - ₹1,950/Qtl</option>
+              <option value="orange-nagpur">🍊 Orange (Nagpur Santra) - ₹3,200/Qtl</option>
+            </optgroup>
+            <optgroup label="🌶️ Spices & Cash Crops (मसाले)">
+              <option value="chilli-dry">🌶️ Dry Red Chilli (Teja Best) - ₹18,400/Qtl</option>
+              <option value="turmeric-finger">🟡 Turmeric (Salem Finger Double Polished) - ₹13,600/Qtl</option>
+            </optgroup>
+            <optgroup label="🌾 Cereals & Grains (अनाज)">
+              <option value="wheat-sharbati">🌾 Wheat (Sharbati Gold) - ₹2,840/Qtl</option>
+              <option value="basmati-rice">🍚 Basmati Paddy (1121) - ₹4,320/Qtl</option>
+            </optgroup>
+            <optgroup label="🌱 Oilseeds & Pulses (दलहन व तिलहन)">
+              <option value="soybean-yellow">🌱 Soybean (Yellow Bold) - ₹4,890/Qtl</option>
+              <option value="cotton-bt">☁️ Cotton (BT Medium) - ₹7,240/Qtl</option>
+              <option value="mustard-seed">🌼 Mustard (Black Sarson) - ₹5,650/Qtl</option>
+              <option value="chana-gram">🧆 Chana / Chickpea (Desi) - ₹6,150/Qtl</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Farmer Harvest Photo Upload -->
+        <div class="border-2 border-dashed border-emerald-400/80 rounded-2xl p-3 text-center bg-emerald-50/60 hover:bg-emerald-50 transition-colors">
+          <input type="file" id="producePhotoUpload" accept="image/*" class="hidden" />
+          <label for="producePhotoUpload" class="cursor-pointer block">
+            <span class="text-2xl">📸</span>
+            <p class="text-xs font-bold text-emerald-950 mt-0.5">Snap or Upload Photo of Your Harvest Lot</p>
+            <p class="text-[11px] text-gray-500">Merchants bid 20% higher when moisture & grain photos are shown</p>
+          </label>
+          <div id="uploadedPhotoFeedback" class="hidden mt-2 items-center justify-center gap-2 text-xs font-bold text-emerald-800 bg-white/80 p-1.5 rounded-xl border border-emerald-300">
+            <img id="farmerUploadPreviewThumb" src="" alt="Uploaded Harvest" class="w-8 h-8 rounded-lg object-cover" />
+            <span id="farmerUploadName">Photo attached</span>
+          </div>
+        </div>
+
+        <!-- Quantity Input -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Quantity
+              (Quintals)</label>
+            <input type="number" id="sellQuantityInput" value="25" min="1" max="1000"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm font-bold bg-gray-50 focus:ring-2 focus:ring-emerald-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Moisture / Grade</label>
+            <select
+              class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold bg-gray-50 focus:ring-2 focus:ring-emerald-600 focus:outline-none">
+              <option>Grade A (Dry & Clean)</option>
+              <option>Grade B (Standard Mandi)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Estimated Value Display -->
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+          <div>
+            <span class="text-xs text-emerald-800 font-semibold">Estimated Gross Payout:</span>
+            <div class="text-2xl font-extrabold text-emerald-950 font-mono" id="estimatedRevenueBadge">
+              ₹71,000
+            </div>
+          </div>
+          <span class="badge-glass badge-green text-xs font-bold">Instant IMPS/Cash</span>
+        </div>
+
+        <!-- Farm Pickup Preference -->
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="pickupCheckbox" checked class="w-4 h-4 text-emerald-600 rounded">
+          <label for="pickupCheckbox" class="text-xs font-semibold text-gray-700">Request free buyer truck pickup at my
+            farm gate</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-agri btn-primary w-full py-3 text-sm font-bold shadow-md">
+          Broadcast to Merchants Now
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       EDIT FARM PROFILE & LOCATION MODAL
+       ======================================================================== -->
+  <div id="editProfileModalOverlay" class="call-modal-overlay">
+    <div class="glass-panel p-6 max-w-lg w-full m-4 max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl border-2 border-emerald-500/40 relative">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-200">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">✏️</span>
+          <div>
+            <h3 class="text-lg font-extrabold text-emerald-950">Update Farm & Contact Details</h3>
+            <p class="text-xs text-gray-500">Edit details to refresh surrounding Mandi distance calculations</p>
+          </div>
+        </div>
+        <button type="button" id="closeEditProfileBtn" class="text-gray-400 hover:text-gray-700 text-xl font-bold w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 transition-colors">✕</button>
+      </div>
+
+      <form id="editProfileForm" class="space-y-3.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Farmer Full Name *</label>
+            <input type="text" id="editFarmerName" value="Ramesh Patel" required class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mobile / WhatsApp *</label>
+            <input type="tel" id="editFarmerPhone" value="98260 12345" maxlength="10" required class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-bold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none font-mono" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Ready Harvest Crop *</label>
+          <select id="editPrimaryCrop" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer">
+            <optgroup label="🥦 Vegetables (सब्जियां)">
+              <option value="potato-jyoti">🥔 Potato (Jyoti Fresh / आलू ज्योति)</option>
+              <option value="onion-red" selected>🧅 Red Onion (Nashik Quality / प्याज लाल)</option>
+              <option value="tomato-hybrid">🍅 Hybrid Tomato (Firm Red / टमाटर)</option>
+              <option value="green-chilli">🌶️ Green Chilli (Jwala / हरी मिर्च)</option>
+              <option value="garlic-desi">🧄 Garlic (Bold Desi / लहसुन देसी)</option>
+              <option value="ginger-fresh">🫚 Ginger (Fresh Root / ताज़ा अदरक)</option>
+              <option value="green-peas">🟢 Green Peas (Sweet Pod / हरी मटर)</option>
+              <option value="cauliflower">🥦 Cauliflower (Snowball / फूलगोभी)</option>
+              <option value="cabbage-green">🥬 Cabbage (Green Ball / पत्तागोभी)</option>
+              <option value="okra-bhindi">🌱 Okra / Ladyfinger (भिंडी)</option>
+              <option value="brinjal-eggplant">🍆 Brinjal (Round Purple / बैंगन भरता)</option>
+              <option value="carrot-red">🥕 Carrot (Red Desi / लाल गाजर)</option>
+              <option value="capsicum-green">🫑 Capsicum (Green Bell / शिमला मिर्च)</option>
+              <option value="coriander-fresh">🌿 Coriander (Fresh Cilantro / हरा धनिया)</option>
+              <option value="bottle-gourd">🥒 Bottle Gourd (Lauki / लौकी घिया)</option>
+            </optgroup>
+            <optgroup label="🍎 Fruits & Horticulture (फल)">
+              <option value="banana-robusta">🍌 Banana (Grand Naine / केला)</option>
+              <option value="orange-nagpur">🍊 Orange (Nagpur Santra / संतरा)</option>
+            </optgroup>
+            <optgroup label="🌾 Cereals & Grains (अनाज)">
+              <option value="wheat-sharbati">🌾 Wheat (Sharbati Gold / शरबती गेहूं)</option>
+              <option value="basmati-rice">🍚 Basmati Paddy (1121 / बासमती धान)</option>
+            </optgroup>
+            <optgroup label="🌱 Oilseeds & Pulses (दलहन व तिलहन)">
+              <option value="soybean-yellow">🌱 Soybean (Yellow Bold / पीला सोयाबीन)</option>
+              <option value="cotton-bt">☁️ Cotton (BT Medium / कपास)</option>
+              <option value="mustard-seed">🌼 Mustard (Black Sarson / सरसों)</option>
+              <option value="chana-gram">🧆 Chana / Chickpea (Desi / चना देसी)</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">District / Tehsil *</label>
+            <input type="text" id="editFarmerDistrict" value="Indore" required class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">State *</label>
+            <input type="text" id="editFarmerState" value="Madhya Pradesh" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Village / Landmark</label>
+            <input type="text" id="editFarmerVillage" value="Gram Hatod Farm Gate" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-semibold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Farm Size</label>
+            <div class="flex gap-2">
+              <input type="number" id="editLandSize" value="12" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs sm:text-sm font-bold bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none" />
+              <select id="editLandUnit" class="px-2 py-2 rounded-xl border border-gray-300 text-xs font-bold bg-gray-50">
+                <option>Acres</option>
+                <option>Bighas</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span>📍</span>
+            <span class="text-gray-600 font-medium">GPS:</span>
+            <b id="editGpsCoordsBadge" class="font-mono text-emerald-950 font-bold">22.7312° N, 75.8648° E</b>
+          </div>
+          <button type="button" id="editFarmGpsBtn" class="btn-agri btn-primary py-1 px-2.5 text-[11px] font-bold shadow-2xs">
+            Auto-Detect
+          </button>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-gray-200">
+          <button type="button" id="cancelEditProfileBtn" class="px-4 py-2 rounded-xl border border-gray-300 text-xs font-bold text-gray-600 hover:bg-gray-100">
+            Cancel
+          </button>
+          <button type="submit" id="saveEditProfileBtn" class="btn-agri btn-primary px-6 py-2 text-xs sm:text-sm font-bold shadow-md">
+            Save & Update Rates
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FLOATING CALL ACTION BUTTON (Always reachable on mobile & desktop)
+       ======================================================================== -->
+  <button class="floating-call-fab trigger-call-bot" title="Call Kisan AI Voice Assistant"
+    aria-label="Call Kisan AI Assistant">
+    <div class="w-6 h-6 flex items-center justify-center">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+      </svg>
+    </div>
+    <span class="font-extrabold text-sm tracking-tight pr-1">Call AI AgriBot</span>
+  </button>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Mock Agricultural Data -->
+  <script src="js/mock-data.js"></script>
+  <!-- Main Application Logic -->
+  <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const env = require('./config/env');
+const authRoutes = require('./routes/authRoutes');
+const mandiRoutes = require('./routes/mandiRoutes');
+const sellingRoutes = require('./routes/sellingRoutes');
+const alertRoutes = require('./routes/alertRoutes');
+const trendRoutes = require('./routes/trendRoutes');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+
+const app = express();
+app.use(helmet());
+app.use(cors({ origin(origin, callback) { if (!origin || env.corsOrigins.includes(origin)) return callback(null, true); return callback(new Error('Origin is not allowed by CORS.')); } }));
+app.use(express.json({ limit: '100kb' }));
+app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
+app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 200, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'Too many requests. Try again later.' } }));
+app.get('/health', (req, res) => res.json({ success: true, data: { status: 'ok' } }));
+app.use('/api/auth', authRoutes);
+app.use('/api/mandi', mandiRoutes);
+app.use('/api/selling', sellingRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/mandi/trends', trendRoutes);
+app.use(notFound);
+app.use(errorHandler);
+module.exports = app;

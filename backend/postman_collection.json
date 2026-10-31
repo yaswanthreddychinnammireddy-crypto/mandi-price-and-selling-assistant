@@ -1,0 +1,10 @@
+{
+  "info": { "name": "Mandi Price & Crop Selling Assistant", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:5000" }, { "key": "token", "value": "" }],
+  "item": [
+    { "name": "Register", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Farmer\",\n  \"email\": \"farmer@example.com\",\n  \"password\": \"securepassword\"\n}" }, "url": "{{baseUrl}}/api/auth/register" } },
+    { "name": "Mandi prices", "request": { "method": "GET", "url": "{{baseUrl}}/api/mandi/prices?state=Telangana&crop=Cotton" } },
+    { "name": "Selling assistant", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"crop\": \"Cotton\",\n  \"quantity\": 20,\n  \"unit\": \"quintal\",\n  \"state\": \"Telangana\",\n  \"district\": \"Warangal\",\n  \"language\": \"English\"\n}" }, "url": "{{baseUrl}}/api/selling/assistant" } },
+    { "name": "Create alert", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\n  \"crop\": \"Cotton\",\n  \"mandi\": \"Warangal\",\n  \"targetPrice\": 7500,\n  \"unit\": \"INR/quintal\"\n}" }, "url": "{{baseUrl}}/api/alerts" } }
+  ]
+}

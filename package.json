@@ -1,0 +1,20 @@
+{
+  "name": "kisan-setu-frosted-agritech",
+  "version": "1.0.0",
+  "description": "Senior UI/UX designed frosted-glass AgriTech portal for farmers with voice AI calling, real-time mandi prices, merchant marketplace, and live geo-tracking.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "ui-ux",
+    "frosted-glass",
+    "agritech",
+    "farmers",
+    "voice-bot",
+    "mandi-prices"
+  ],
+  "author": "Principal UI/UX Architect",
+  "license": "MIT"
+}
